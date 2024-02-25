@@ -96,20 +96,20 @@ function decodeBullpress(input) {
 
 const fs = require("fs");
 const path = require("path")
-const input = fs.readFileSync(path.join(__dirname, "input.txt"), "utf8").repeat(10);
+const input = fs.readFileSync(path.join(__dirname, "enwik8.pmd"), "utf8")
 
 // Example usage with timing:
 const start = Date.now();
 
 const originalString = encodeURI(input)
 
-console.log("Original String: ", input);
-console.log()
-console.log("Original String (With URI ENCODE): ", originalString);
-console.log()
+// console.log("Original String: ", input);
+console.log('.')
+// console.log("Original String (With URI ENCODE): ", originalString);
+console.log('..')
 
 const encodedString = encodeBullpress(originalString);
-console.log("Encoded String: ", encodedString, "\n");
+// console.log("Encoded String: ", encodedString, "\n");
 
 console.log("Optimization Status: ", encodedString.length < originalString.length ? "Optimized" : "Not Optimized")
 
