@@ -1,3 +1,6 @@
+// An account service for cows.
+// Copyright (C) 2024  SpectCOW
+
 const Cowrle = require("./cowrle");
 const BWT = require("./BWT");
 const Huffman = require("./huffman");
