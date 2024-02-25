@@ -1,6 +1,9 @@
+// An account service for cows.
+// Copyright (C) 2024  SpectCOW
+
 /*
  * COWRLE - Compact Oversimplified Wonderful RLE
- * Copyright (C) 2024 SpectCOW
+ * Copyright (C) 2024  SpectCOW
  */
 
 function* encodeCOWRLEGenerator(input) {
