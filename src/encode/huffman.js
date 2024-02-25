@@ -1,3 +1,6 @@
+// An account service for cows.
+// Copyright (C) 2024  SpectCOW
+
 class HuffmanNode {
   constructor(char, freq) {
     this.char = char;
