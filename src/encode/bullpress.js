@@ -6,6 +6,12 @@ const BWT = require("./BWT");
 const Huffman = require("./huffman");
 
 const CHUNK_LENGTH = 1024 * 8;
+const CHUCK_LENGTH_SPEED = 260;
+const CHAR_EXCHANGE_COST = CHUCK_LENGTH_SPEED / CHUNK_LENGTH;
+
+function calculateCost(string) {
+  return string.length * CHAR_EXCHANGE_COST;
+}
 
 const casing = {
   // Format: <BWT:{ transformedString }|{ originalIndex }:>
@@ -20,24 +26,68 @@ const casing = {
 const AvoidEnc = {
   encode(input) {
     // Escape any Special Characters
-    return input.replace(/\d+/g, (match) => {
-      const res = match
-        .split("")
-        .map((digit) =>
-          String.fromCharCode("A".charCodeAt(0) + parseInt(digit)),
-        )
-        .join("");
-
-      return `(${res})`;
-    });
+    const caser = (_) => `(${_})`;
+    return input.replace(/\d+/g, (match) =>
+      caser(
+        match
+          .split("")
+          .map((digit) =>
+            String.fromCharCode("A".charCodeAt(0) + parseInt(digit))
+          )
+          .join("")
+      )
+    );
   },
   decode(input) {
-    return input.replace(/\((.*?)\)/g, (match, p1) => {
-      return p1
+    return input.replace(/\((.*?)\)/g, (match, p1) =>
+      p1
         .split("")
         .map((char) => char.charCodeAt(0) - "A".charCodeAt(0))
-        .join("");
-    });
+        .join("")
+    );
+  },
+};
+
+const BracketEncoder = {
+  encode(input) {
+    return input
+      .replace(/\]\(/g, "Ϣ")
+      .replace(/\)\[/g, "ϣ")
+
+      .replace(/\]\{/g, "Ϡ")
+      .replace(/\}\[/g, "ϡ")
+
+      .replace(/\)\{/g, "Ϟ")
+      .replace(/\}\(/g, "ϟ")
+
+      // SIMPLE (Must be below, for some reason)
+      
+      .replace(/\(\[/g, "{")
+      .replace(/\]\)/g, "}")
+
+      .replace(/\[\(/g, "<")
+      .replace(/\)\]/g, ">")
+  },
+
+  decode(input) {
+    return input
+
+      .replace(/Ϣ/g, "](")
+      .replace(/ϣ/g, ")[")
+
+      .replace(/Ϡ/g, "]{")
+      .replace(/ϡ/g, "}[")
+
+      .replace(/Ϟ/g, "){")
+      .replace(/ϟ/g, "}(")
+      
+      // SIMPLE (Must be below, for some reason)
+      
+      .replace(/\{/g, "([")
+      .replace(/\}/g, "])")
+
+      .replace(/\</g, "[(")
+      .replace(/\>/g, ")]")
   },
 };
 
@@ -54,11 +104,12 @@ function encodeBullpress(input, chunkSize = CHUNK_LENGTH) {
   // Chunk parsing for big data
   let encodedResult = "";
   for (let i = 0; i < input.length; i += chunkSize) {
-    const chunk = input.substring(i, Math.min(i + chunkSize, input.length));
-    const basedKey = base64.encode(chunk);
-    const res1 = BWT.burrowsWheelerTransform(basedKey);
-    const numbedKey = AvoidEnc.encode(res1.transformedString);
-    const transformedString = Cowrle.encodeCOWRLE(numbedKey);
+    let chunk = input.substring(i, Math.min(i + chunkSize, input.length)),
+      basedKey = base64.encode(chunk),
+      res1 = BWT.burrowsWheelerTransform(basedKey),
+      numbedKey = AvoidEnc.encode(res1.transformedString),
+      cowrString = Cowrle.encodeCOWRLE(numbedKey),
+      transformedString = BracketEncoder.encode(cowrString);
 
     encodedResult += casing.caseChunk({
       transformedString,
@@ -72,90 +123,43 @@ function encodeBullpress(input, chunkSize = CHUNK_LENGTH) {
 }
 
 function decodeBullpress(input) {
-  var output = "";
-  const deCasedBull = /<Bull:(.*):>/g.exec(input)[1];
-  const decodedResult = deCasedBull.match(/<Bull_Chunk:(.*?)\|(\d+):>/g);
+  let output = "",
+    deCasedBull = /<Bull:(.*):>/g.exec(input)[1],
+    decodedResult = deCasedBull.match(/<Bull_Chunk:(.*?)\|(\d+):>/g);
 
   if (!decodedResult) return;
 
   for (let i = 0; i < decodedResult.length; i++) {
-    const chunk = decodedResult[i];
-    const [, transformedString, originalIndex] = chunk.match(
-      /<Bull_Chunk:(.*)\|(\d+):>/,
-    );
-    const numbedKey = Cowrle.decodeCOWRLE(transformedString);
-    const res1 = AvoidEnc.decode(numbedKey);
-    const basedKey = BWT.inverseBurrowsWheelerTransform(res1, originalIndex);
+    const chunk = decodedResult[i],
+      [, transformedString, originalIndex] = chunk.match(
+        /<Bull_Chunk:(.*)\|(\d+):>/
+      ),
+      cowrString = BracketEncoder.decode(transformedString),
+      numbedKey = Cowrle.decodeCOWRLE(cowrString),
+      res1 = AvoidEnc.decode(numbedKey),
+      basedKey = BWT.inverseBurrowsWheelerTransform(res1, originalIndex);
+
     output += base64.decode(basedKey);
   }
 
   return output;
 }
 
-// ---
+module.exports = {
+  encodeBullpress,
+  decodeBullpress,
+  calculateCost,
+  
+  CHUNK_LENGTH,
+  CHUCK_LENGTH_SPEED,
+  CHAR_EXCHANGE_COST,
+  
+  casing,
+  AvoidEnc,
+  base64,
 
-const fs = require("fs");
-const path = require("path");
-// const input = fs.readFileSync(path.join(__dirname, "enwik8.pmd"), "utf8")
-
-// const input = "Hello World!"
-//   .repeat(12)
-//   .repeat(60)
-//   .repeat(100)
-
-const input = fs.readFileSync(path.join(__dirname, "enwik8.pmd"), "utf8").slice(0, CHUNK_LENGTH * 6)
-
-// Example usage with timing:
-const start = Date.now();
-
-const originalString = encodeURI(input);
-
-if (originalString.length < 10000) {
-  console.log("Original String: ", input);
-  console.log(".");
-  console.log("Original String (With URI ENCODE): ", originalString);
-  console.log("..");
-}
-
-const encodedString = encodeBullpress(originalString);
-if (encodedString.length < 10000) console.log("Encoded String: ", encodedString, "\n");
-
-console.log(
-  "Optimization Status: ",
-  encodedString.length < originalString.length ? "Optimized" : "Not Optimized",
-);
-
-console.log("Chunk Length: ", CHUNK_LENGTH, "bytes");
-console.log("Number of Chunks: ", Math.floor(input.length / CHUNK_LENGTH));
-
-console.log("Encoded Length:  ", encodedString.length, "bytes");
-console.log("Original Length:    ", originalString.length, "bytes");
-
-console.log(
-  "Size Difference:  ",
-  encodedString.length - originalString.length,
-  "bytes",
-);
-console.log(
-  "Percentage Difference:  ",
-  (
-    ((encodedString.length - originalString.length) / originalString.length) *
-    100
-  ).toFixed(2),
-  "%",
-);
-console.log();
-
-const end = Date.now();
-console.log("Processing Time: ", end - start, "ms");
-
-const decodedString = decodeBullpress(encodedString);
-const end2 = Date.now();
-console.log("Decoding time: ", end2 - end, "ms");
-// console.log("Decoded String: ", decodedString);
-
-console.log();
-
-// console.log("Original String: ", decodeURI(decodedString));\
-
-console.log("Result: ", originalString === decodedString);
+  Cowrle,
+  BWT,
+  // Unused
+  Huffman,
+};

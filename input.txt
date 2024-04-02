@@ -1,0 +1,140 @@
+std := import('std')
+str := import('str')
+
+{
+  flag: flag
+  bindFlag: bindFlag
+} := import('flag')
+
+fn encodeCOWRLEGen(input) {
+  yield := []
+
+  encoded := ''
+  i := 0
+  lastCount := 0
+  count := 1
+  inBrackets := false
+
+  fn handleRepeatedChar(char) {
+    if !inBrackets -> {
+      encoded << '['
+      inBrackets <- true
+    }
+
+    if lastCount != count -> {
+      encoded << count |> string()
+      lastCount <- count
+    }
+
+    encoded << char
+  }
+
+  fn handleSingleChar(char) {
+    if inBrackets -> {
+      encoded << ']'
+      inBrackets <- false
+    }
+
+    encoded << char
+  }
+
+  fn finalizeEncoding {
+    if (i = (input |> len()) - 1) & inBrackets -> {
+      encoded << ']'
+    }
+
+    count <- 1
+  }
+
+  fn handleUniqueChar(char) {
+    if count > 1 {
+      true -> handleRepeatedChar(char)
+      false -> handleSingleChar(char)
+    }
+
+    finalizeEncoding()
+  }
+
+  fn processChar(char, nextChar) if char {
+    nextChar -> count <- count + 1
+
+    _, ? -> handleUniqueChar(char)
+  }
+
+  with str.split(input) |> std.each() fn {
+    processChar(input.(i), input.(i + 1))
+    yield << encoded
+    encoded <- ''
+
+    i <- i + 1
+  }
+
+  yield
+}
+
+fn decodeCOWRLEGen(input) {
+  yield := []
+  
+  decoded := ''
+  i := 0
+  lastCount := 1
+  count := ''
+  inBrackets := false
+
+  fn updateCount(character) {
+    count << character
+    lastCount <- int(count)
+  }
+
+  fn handleCharacter(character) {
+    if {
+      (int(count) != 0) & (int(count) != lastCount) -> {
+        decoded << character |> str._extend(lastCount)
+      }
+
+      int(count) = lastCount -> {
+        decoded << character |> str._extend(int(count))
+        count <- '0'
+      }
+
+      _ -> if inBrackets {
+        true -> decoded << character |> str._extend(int(count) |> std.default(lastCount))
+        false -> decoded << character
+      }
+    }
+  }
+
+  fn processCharacter(character) {
+    if {
+      character = '[' -> {
+        inBrackets <- true
+      }
+    
+      character = ']' -> {
+        inBrackets <- false
+      }
+
+      _ -> if character {
+        ' ' -> handleCharacter(character)
+        
+        _ -> if character |> int() {
+          ? -> handleCharacter(character)
+          _ -> updateCount(character)
+        }
+      }
+    }
+  }
+
+  with str.split(input) |> std.each() fn {
+    processCharacter(input.(i), input.(i + 1))
+    yield << decoded
+    decoded <- ''
+
+    i <- i + 1
+  }
+
+  yield
+}
+
+fn encodeCOWRLE(input) with std.join('') encodeCOWRLEGen(input)
+fn decodeCOWRLE(input) with std.join('') decodeCOWRLEGen(input)
