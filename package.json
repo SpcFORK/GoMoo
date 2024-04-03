@@ -4,13 +4,15 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "bpb": "esbuild src/encode/bullpress/index.js --bundle --outdir=dist",
+    "bpbw": "esbuild src/encode/bullpress/bullpressWeb/index.js --bundle --outdir=wdist"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@types/node": "^18.0.6",
+    "esbuild": "^0.20.2",
     "node-fetch": "^3.2.6",
     "src": "^1.1.2"
   }
