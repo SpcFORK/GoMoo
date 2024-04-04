@@ -1,1 +1,1 @@
-const bp = require("./src/encode/bullpress/test/speed");
+const bp = require("./src/encode/bullpress/test/basic");

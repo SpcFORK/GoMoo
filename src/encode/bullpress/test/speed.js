@@ -33,6 +33,11 @@ function testEncodingPerformance() {
     console.log("  PL: ", encoded.presumedTime, "ms");
     totalTime += end - start;
     console.log("  Time: ", (end - start).toFixed(2), "ms\n");
+    console.log(
+      "  E Slice:",
+      encoded.encodedString.slice(0, 2000),
+      "...\n",
+    );
   }
 
   console.log(`Average encoding/decoding time: ${totalTime / iterations} ms`);
@@ -51,7 +56,7 @@ function testDecodingPerformance() {
       randomString.length,
       ", \n  String Slice:",
       randomString.slice(0, 10),
-      "...\n",
+      "...\n"
     );
 
     const start = performance.now();

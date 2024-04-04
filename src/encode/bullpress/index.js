@@ -121,7 +121,7 @@ function decode(input, logging = false) {
   }
 
   return {
-    decodedString,
+    decodedString: decodeURI(decodedString),
     endTime: end,
     startTime: start,
     timeSpent,
