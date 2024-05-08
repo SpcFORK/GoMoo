@@ -1,17 +1,24 @@
-const {
-  encodeBullpress,
-  decodeBullpress,
-  CHUNK_LENGTH,
+const BP = require("./bullpress.js"),
+  {
+    encodeBullpress,
+    decodeBullpress,
+    CHUNK_LENGTH,
 
-  calculateCost,
-  calculateChunks,
-} = require("./bullpress.js");
+    base64,
+    Cowrle,
+    BWT,
+    // Unused
+    Huffman,
+
+    calculateCost,
+    calculateChunks,
+  } = BP;
 
 // ---
 
 function encode(input, logging = false) {
   const start = Date.now(),
-    uriString = encodeURI(input);
+    uriString = input;
 
   function logIfEnabled(...messages) {
     if (logging) console.log(...messages);
@@ -75,6 +82,7 @@ function encode(input, logging = false) {
     timeSpent,
     chunkCount,
     presumedTime: calculateCost(uriString).toFixed(2),
+    asUInt8: () => BP.Uint8Encoder.encodeUint8(encodedString),
   };
 }
 
@@ -121,7 +129,7 @@ function decode(input, logging = false) {
   }
 
   return {
-    decodedString: decodeURI(decodedString),
+    decodedString: decodedString,
     endTime: end,
     startTime: start,
     timeSpent,
@@ -280,6 +288,16 @@ const eobj = {
   CHUNK_LENGTH,
   calculateCost,
   calculateChunks,
+
+  base64,
+  Cowrle,
+  BWT,
+  // Unused
+  Huffman,
+
+  BP,
+
+  decodeBPUInt8: BP.decompressFromUInt8Buffer,
 };
 
 if (typeof globalThis.window !== "undefined") globalThis.window.GoMooE1 = eobj;

@@ -1,0 +1,9 @@
+// Data to Uint8 Encoder
+
+function encodeUint8(input) {
+  return input.map(char => char.charCodeAt(0))
+}
+
+function decodeUint8(input) {
+  return input.map(char => String.fromCharCode(char))
+}

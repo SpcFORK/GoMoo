@@ -4,11 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "b!e": "esbuild ./src/encode/bullpress/index.js --bundle --outdir=dist",
-    "bw!e": "esbuild ./src/encode/bullpress/bullpressWeb/index.js --bundle --outdir=wdist",
-    "ba!e": "esbuild ./src/encode/bullpress --bundle --outdir=dist",
-    "baw!e": "esbuild ./src/encode/bullpress/bullpressWeb --bundle --outdir=wdist",
-    "ba!": "esbuild ./src --bundle --outdir=dist"
+    "b-e": "esbuild ./src/encode/bullpress/index.js --bundle --outdir=dist --platform=node --target=node10.4",
+    "bw-e": "esbuild ./src/encode/bullpress/index.js --bundle --minify --sourcemap --outdir=wdist --platform=browser",
+    "ba-e": "esbuild ./src/encode/bullpress --bundle --outdir=dist",
+    "baw-e": "esbuild ./src/encode/bullpress/bullpressWeb --bundle --outdir=wdist",
+    "ba-": "esbuild ./src --bundle --outdir=dist"
   },
   "keywords": [],
   "author": "",

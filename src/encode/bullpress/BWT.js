@@ -35,7 +35,7 @@ function burrowsWheelerTransform(input) {
   return { transformedString, originalIndex };
 }
 
-function inverseBurrowsWheelerTransform(transformedString, originalIndex) {
+function inverseBurrowsWheelerTransform(transformedString = '', originalIndex) {
   const table = [];
 
   // Construct the Burrows-Wheeler transformation table

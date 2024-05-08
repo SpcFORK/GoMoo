@@ -1,6 +1,8 @@
 // An account service for cows.
 // Copyright (C) 2024  SpectCOW
 
+// GM1E
+
 const Cowrle = require("./cowrle");
 const BWT = require("./BWT");
 const Huffman = require("./huffman");
@@ -18,7 +20,10 @@ const casing = require("./blocks/casing");
 
 const AvoidEnc = require("./blocks/avoidE")
 
+const patternEncoder = require("./blocks/patternE");
 const BracketEncoder = require("./blocks/bracketE");
+
+const Uint8Encoder = require("./blocks/uint8E")
 
 const base64 = require("./blocks/base64");
 
@@ -67,6 +72,18 @@ function decodeBullpress(input) {
   return output;
 }
 
+function compressToUInt8Buffer(input = "") {
+  // Converts the input string to a Uint8Array after encoding it with Bullpress
+  const encoded = encodeBullpress(input);
+  return Uint8Encoder.encodeUint8(encoded);
+}
+
+function decompressFromUInt8Buffer(input = new Uint8Array()) {
+  // Decodes the input Uint8Array back to a string using Bullpress decoding
+  const decodedString = Uint8Encoder.decodeUint8(input);
+  return decodeBullpress(decodedString);
+}
+
 const eobj = {
   encodeBullpress,
   decodeBullpress,
@@ -86,6 +103,10 @@ const eobj = {
   BWT,
   // Unused
   Huffman,
+
+  compressToUInt8Buffer,
+  decompressFromUInt8Buffer,
+  Uint8Encoder
 };
 
 if (typeof globalThis.window !== "undefined") globalThis.window.bullpress = eobj;

@@ -1,6 +1,8 @@
 // An account service for cows.
 // Copyright (C) 2024  SpectCOW
 
+const b = require("./blocks/base64.js");
+
 class HuffmanNode {
   constructor(char, freq) {
     this.char = char;
@@ -81,6 +83,39 @@ function decompress(encoded, codeMap) {
   return decoded;
 }
 
+// ---
+
+const lockerKeys = [
+    "\u0000",
+    "\u0001",
+    "\u0002",
+    "\u000f",
+    "\u0003",
+    "\u0004",
+    "\u000f",
+  ],
+  lockerString = "L&" + lockerKeys.join("&"),
+  lockerBits = [
+    lockerString + lockerKeys[0],
+    lockerString + lockerKeys[1],
+  ]
+
+function codeMapToString(codeMap = {}) {
+  let res = "";
+  for (let char in codeMap)
+    res += `${char}${lockerBits[0]}${codeMap[char]}${lockerBits[1]}`;
+  return res;
+}
+
+function unpackCodeMapString(codeMapString) {
+  let codeMap = {};
+  for (let line of codeMapString.split(lockerBits[1])) {
+    let [char, code] = line.split(lockerBits[0]);
+    codeMap[char] = code;
+  }
+  return codeMap;
+}
+
 // Example usage
 // const originalString = "hello world";
 // const compressedData = compress(originalString);
@@ -99,6 +134,8 @@ const eobj = {
   encode,
   compress,
   decompress,
+  codeMapToString,
+  unpackCodeMapString,
 };
 
 if (typeof globalThis.window !== "undefined") globalThis.window.huffman = eobj;

@@ -1,11 +1,21 @@
 const eobj = {
-  // Format: <BWT:{ transformedString }|{ originalIndex }:>
+  // BP1
+  
   caseChunk({ transformedString, originalIndex }) {
     return `<Bull_Chunk:${transformedString}|${originalIndex}:>`;
   },
 
   caseBull({ chunk }) {
     return `<Bull:${chunk}:>`;
+  },
+
+  // BP2
+  caseChunk2({ transformedString, originalIndex, map, mapI }) {
+    return `<Bull2_Chunk:${transformedString}|${originalIndex}|${map}|${mapI}:>`;
+  },
+
+  caseBull2({ chunk }) {
+    return `<Bull2:${chunk}:>`;
   },
 };
 
