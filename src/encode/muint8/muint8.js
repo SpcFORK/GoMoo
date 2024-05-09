@@ -70,7 +70,13 @@ class MUint8Encoder {
     if (chunkSize == -1) chunkSize = input.length;
 
     let output = [],
-      overflowArr = this.mu.parseIntoOverflowArr(input);
+      overflowArr;
+
+    // Handle type
+    if (typeof input !== "string" && !(input instanceof Uint8Array))
+      overflowArr = input;
+    else if (Array.isArray(input)) overflowArr = this.mu.shiftArr(input);
+    else overflowArr = this.mu.parseIntoOverflowArr(input);
 
     overflowArr.forEach((value, index) => {
       let isOverFlow = value > 255,
@@ -92,10 +98,9 @@ class MUint8Encoder {
     // );
 
     let correctedOverflow = [];
-    for (let i = 0; i < decodedRLE.length; i++) {
-      // Find Zero?
-      // console.log(decodedRLE[i]);
-      if (decodedRLE[i] == 0) {
+    for (let i = 0; i < decodedRLE.length; i++)
+      if (decodedRLE[i] !== 0) correctedOverflow.push(decodedRLE[i]);
+      else {
         // Get last parsed, and next, and add them
         let last = correctedOverflow[i - 1],
           next = decodedRLE[i + 1];
@@ -103,9 +108,6 @@ class MUint8Encoder {
         correctedOverflow.push(last + next);
         continue;
       }
-
-      correctedOverflow.push(decodedRLE[i]);
-    }
 
     return this.mu.parseFromOverflowArr(correctedOverflow);
   }
