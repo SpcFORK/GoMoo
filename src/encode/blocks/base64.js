@@ -21,8 +21,7 @@ const base64 = {
         .join("");
     }
 
-    output = output
-      .replace(/=+$/, "")
+    output = output.replace(/=+$/, "");
 
     return output;
   },
@@ -48,8 +47,7 @@ const base64 = {
       if (index4 !== 64) output += String.fromCharCode(c);
     }
 
-    output = output
-      .replace(/[\x00\uffff]+$/g, "")
+    output = output.replace(/[\x00\uffff]+$/g, "");
 
     return output;
   },

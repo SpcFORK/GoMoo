@@ -14,26 +14,22 @@ class HuffmanNode {
 
 function buildFrequencyMap(str) {
   const freqMap = {};
-  for (let i = 0; i < str.length; i++) {
-    if (freqMap.hasOwnProperty(str[i])) {
-      freqMap[str[i]]++;
-    } else {
-      freqMap[str[i]] = 1;
-    }
-  }
+  for (let i = 0; i < str.length; i++)
+    if (freqMap.hasOwnProperty(str[i])) freqMap[str[i]]++;
+    else freqMap[str[i]] = 1;
   return freqMap;
 }
 
 function buildHuffmanTree(freqMap) {
   const nodes = [];
-  for (let char in freqMap) {
-    nodes.push(new HuffmanNode(char, freqMap[char]));
-  }
+  for (let char in freqMap) nodes.push(new HuffmanNode(char, freqMap[char]));
   while (nodes.length > 1) {
     nodes.sort((a, b) => a.freq - b.freq);
-    const left = nodes.shift();
-    const right = nodes.shift();
-    const newNode = new HuffmanNode(null, left.freq + right.freq);
+
+    const left = nodes.shift(),
+      right = nodes.shift(),
+      newNode = new HuffmanNode(null, left.freq + right.freq);
+
     newNode.left = left;
     newNode.right = right;
     nodes.push(newNode);
@@ -42,20 +38,17 @@ function buildHuffmanTree(freqMap) {
 }
 
 function buildCodeMap(node, code = "", codeMap = {}) {
-  if (node.char !== null) {
-    codeMap[node.char] = code;
-  } else {
-    buildCodeMap(node.left, code + "0", codeMap);
-    buildCodeMap(node.right, code + "1", codeMap);
-  }
+  if (node.char !== null) codeMap[node.char] = code;
+  else
+    [node.left, node.right].forEach((c, i) =>
+      buildCodeMap(c, code + i, codeMap),
+    );
   return codeMap;
 }
 
 function encode(str, codeMap) {
   let encoded = "";
-  for (let i = 0; i < str.length; i++) {
-    encoded += codeMap[str[i]];
-  }
+  for (let i = 0; i < str.length; i++) encoded += codeMap[str[i]];
   return encoded;
 }
 
@@ -72,13 +65,12 @@ function decompress(encoded, codeMap) {
   let currentCode = "";
   for (let i = 0; i < encoded.length; i++) {
     currentCode += encoded[i];
-    for (let char in codeMap) {
+    for (let char in codeMap)
       if (codeMap[char] === currentCode) {
         decoded += char;
         currentCode = "";
         break;
       }
-    }
   }
   return decoded;
 }
@@ -95,10 +87,7 @@ const lockerKeys = [
     "\u000f",
   ],
   lockerString = "L&" + lockerKeys.join("&"),
-  lockerBits = [
-    lockerString + lockerKeys[0],
-    lockerString + lockerKeys[1],
-  ]
+  lockerBits = [lockerString + lockerKeys[0], lockerString + lockerKeys[1]];
 
 function codeMapToString(codeMap = {}) {
   let res = "";

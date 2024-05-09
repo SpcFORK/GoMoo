@@ -167,14 +167,7 @@ class FlagArrayRLE {
   }
 }
 
+const eobj = { MUint8, MUint8Encoder };
 
-exports.FlagArrayRLE = FlagArrayRLE;
-exports.MUint8 = MUint8;
-exports.MUint8Encoder = MUint8Encoder;
-exports.UInt8E = UInt8E;
-exports.default = {
-  MUint8,
-  MUint8Encoder,
-  FlagArrayRLE,
-  UInt8E
-}
+if (typeof module !== "undefined") module.exports = eobj;
+if (typeof window !== "undefined") window.MUint8 = eobj;

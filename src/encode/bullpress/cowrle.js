@@ -12,18 +12,12 @@ function* encodeCOWRLEGenerator(input) {
     count = 1,
     inBrackets = !1,
     processChar = (char, nextChar) => {
-      if (char === nextChar) {
-        count++;
-      } else {
-        handleUniqueChar(char);
-      }
+      if (char === nextChar) count++;
+      else handleUniqueChar(char);
     },
     handleUniqueChar = (char) => {
-      if (count > 1) {
-        handleRepeatedChar(char);
-      } else {
-        handleSingleChar(char);
-      }
+      if (count > 1) handleRepeatedChar(char);
+      else handleSingleChar(char);
 
       finalizeEncoding();
     },
@@ -49,9 +43,7 @@ function* encodeCOWRLEGenerator(input) {
       encoded += char;
     },
     finalizeEncoding = () => {
-      if (i == input.length - 1 && inBrackets) {
-        encoded += "]";
-      }
+      if (i == input.length - 1 && inBrackets) encoded += "]";
 
       count = 1;
     };
@@ -89,20 +81,17 @@ function* decodeCOWRLEGenerator(input) {
         return;
       }
 
-      if (character !== " " && !isNaN(character)) {
-        updateCount(character);
-      } else {
-        handleCharacter(character);
-      }
+      if (character !== " " && !isNaN(character)) updateCount(character);
+      else handleCharacter(character);
     },
     updateCount = (character) => {
       count += character;
       lastCount = parseInt(count);
     },
     handleCharacter = (character) => {
-      if (parseInt(count) !== 0 && parseInt(count) !== lastCount) {
+      if (parseInt(count) !== 0 && parseInt(count) !== lastCount)
         decoded += character.repeat(lastCount);
-      } else if (parseInt(count) == lastCount) {
+      else if (parseInt(count) == lastCount) {
         decoded += character.repeat(parseInt(count));
         count = "0";
       } else {

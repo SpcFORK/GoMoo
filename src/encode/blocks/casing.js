@@ -1,6 +1,6 @@
 const eobj = {
   // BP1
-  
+
   caseChunk({ transformedString, originalIndex }) {
     return `<Bull_Chunk:${transformedString}|${originalIndex}:>`;
   },

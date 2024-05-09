@@ -45,5 +45,6 @@ const eobj = {
   },
 };
 
-if (typeof globalThis.window !== "undefined") globalThis.window.BracketEncoder = eobj;
+if (typeof globalThis.window !== "undefined")
+  globalThis.window.BracketEncoder = eobj;
 if (typeof module !== "undefined") module.exports = eobj;
