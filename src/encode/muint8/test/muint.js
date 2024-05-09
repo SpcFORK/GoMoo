@@ -20,7 +20,7 @@ function makeRandomChar(...predef) {
 }
 
 function makeSemiRandomCharset(length = 4, patternPercentage = 80) {
-  // Do a random, with a given percentage to prefer the last one of 5 characters
+  // Do a random, with a given percentage to prefer the last one of 3 characters
   let cache = new Map();
   return Array.from({ length }, () => {
     let arr = new Array(length).fill(0);
@@ -28,12 +28,12 @@ function makeSemiRandomCharset(length = 4, patternPercentage = 80) {
     let hexCode = randomHexByte();
 
     if (Math.random() * 100 < patternPercentage && cache.size > 0) {
-      hexCode = Array.from(cache.keys())[Math.max(0, cache.size - 5)];
+      hexCode = Array.from(cache.keys())[Math.max(0, cache.size - 16)];
     } else {
       while (cache.has(hexCode)) hexCode = randomHexByte();
       cache.set(hexCode, i);
 
-      if (cache.size > 5) cache.delete(cache.keys().next().value);
+      if (cache.size > 16) cache.delete(cache.keys().next().value);
     }
     arr[i] = hexCode;
     return String.fromCharCode(parseInt(hexCode, 16));

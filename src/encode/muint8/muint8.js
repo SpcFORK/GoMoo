@@ -29,7 +29,7 @@ class MUint8 {
   }
 
   shiftArr(arr = [], neg = false) {
-    return arr.map((x) => x + (this.startingIndex * neg ? -1 : 1));
+    return arr.map((x) => x + this.startingIndex * (neg ? -1 : 1));
   }
 
   parseIntoOverflowArr(input = this.input) {
@@ -171,10 +171,10 @@ class FlagArrayRLE {
   }
 }
 
-const eobj = { 
-  MUint8, 
-  MUint8Encoder, 
-  UInt8E
+const eobj = {
+  MUint8,
+  MUint8Encoder,
+  UInt8E,
 };
 
 if (typeof module !== "undefined") module.exports = eobj;
