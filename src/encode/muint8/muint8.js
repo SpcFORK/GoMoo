@@ -28,13 +28,17 @@ class MUint8 {
     this.input = input;
   }
 
+  shiftArr(arr = [], neg = false) {
+    return arr.map((x) => x + (this.startingIndex * neg ? -1 : 1));
+  }
+
   parseIntoOverflowArr(input = this.input) {
     // Shift the input up by the starting index
-    return [...UInt8E.encodeUint8(input)].map((x) => x + this.startingIndex);
+    return this.shiftArr([...UInt8E.encodeUint8(input)]);
   }
 
   unshiftFromOverflowArr(input = []) {
-    return new Uint8Array(input.map((x) => x - this.startingIndex));
+    return new Uint8Array(this.shiftArr(input, true));
   }
 
   parseFromOverflowArr(input = []) {
@@ -167,7 +171,11 @@ class FlagArrayRLE {
   }
 }
 
-const eobj = { MUint8, MUint8Encoder };
+const eobj = { 
+  MUint8, 
+  MUint8Encoder, 
+  UInt8E
+};
 
 if (typeof module !== "undefined") module.exports = eobj;
 if (typeof window !== "undefined") window.MUint8 = eobj;

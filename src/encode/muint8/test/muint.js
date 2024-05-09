@@ -96,7 +96,7 @@ function TestBasic() {
 function TestSemi() {
   const inp = new Array(10)
     .fill(null)
-    .map((x) => makeSemiRandomCharset(4).join(''))
+    .map((x) => makeSemiRandomCharset(4).join(""))
     .join("");
 
   const encoder = new MUint8Encoder();
@@ -187,18 +187,17 @@ async function DoTests() {
   const doTest = async (fn, i, j) => {
     const name = fn.name || "anonymous";
     let res;
-    
-    console.log(`Starting test ${name} iteration max ${i} of max ${j}`)
+
+    console.log(`Starting test ${name} iteration max ${i} of max ${j}`);
     res = await doTestOn(TestSemi, 5, 5);
-    console.log(res)
-    console.log(`Completed test ${name}`)
-    
+    console.log(res);
+    console.log(`Completed test ${name}`);
+
     return res;
-  }
+  };
 
-  await doTest(TestSemi, 5, 5);
   await doTest(TestBasic, 5, 5);
-
+  await doTest(TestSemi, 5, 5);
 }
 
 // ---
