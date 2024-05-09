@@ -1,5 +1,4 @@
-const uint8E = require("../blocks/uint8E");
-const { MUint8Encoder } = require("../muint8");
+const { MUint8Encoder, UInt8E } = require("../muint8");
 
 // ---
 // @ Gen
@@ -53,9 +52,9 @@ function TestBasic() {
   const encoder = new MUint8Encoder();
 
   const encoded = encoder.encode(inp, -1);
-  const toString = uint8E.decodeUint8(encoded);
+  const toString = UInt8E.decodeUint8(encoded);
 
-  console.log("Input: ", uint8E.encodeUint8(inp));
+  console.log("Input: ", UInt8E.encodeUint8(inp));
   console.log("OArr: ", encoder.mu.parseFromOverflowArr(encoded));
   console.log();
 
@@ -65,11 +64,11 @@ function TestBasic() {
 
   const decoded = encoder.decode(encoded);
   console.log("Decoded: ", decoded);
-  console.log(uint8E.encodeUint8(decoded));
+  console.log(UInt8E.encodeUint8(decoded));
 
   var same = true,
-    arrIn = uint8E.encodeUint8(inp),
-    arrDe = uint8E.encodeUint8(decoded);
+    arrIn = UInt8E.encodeUint8(inp),
+    arrDe = UInt8E.encodeUint8(decoded);
 
   for (let i = 0; i < inp.length; i++)
     if (arrIn[i] != arrDe[i]) {
@@ -103,9 +102,9 @@ function TestSemi() {
   const encoder = new MUint8Encoder();
 
   const encoded = encoder.encode(inp, -1);
-  const toString = uint8E.decodeUint8(encoded);
+  const toString = UInt8E.decodeUint8(encoded);
 
-  console.log("Input: ", uint8E.encodeUint8(inp));
+  console.log("Input: ", UInt8E.encodeUint8(inp));
   console.log("OArr: ", encoder.mu.parseFromOverflowArr(encoded));
   console.log();
 
@@ -115,11 +114,11 @@ function TestSemi() {
 
   const decoded = encoder.decode(encoded);
   console.log("Decoded: ", decoded);
-  console.log(uint8E.encodeUint8(decoded));
+  console.log(UInt8E.encodeUint8(decoded));
 
   var same = true,
-    arrIn = uint8E.encodeUint8(inp),
-    arrDe = uint8E.encodeUint8(decoded);
+    arrIn = UInt8E.encodeUint8(inp),
+    arrDe = UInt8E.encodeUint8(decoded);
 
   for (let i = 0; i < inp.length; i++) {
     if (arrIn[i] != arrDe[i]) {

@@ -1,7 +1,7 @@
 // An account service for cows.
 // Copyright (C) 2024  SpectCOW
 
-const b = require("./blocks/base64.js");
+const b = require("../blocks/base64.js");
 
 class HuffmanNode {
   constructor(char, freq) {

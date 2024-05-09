@@ -1,4 +1,6 @@
-const bp = require("../index");
+const { GoMooE1 } = require("../index");
+
+const bp = GoMooE1;
 
 const fs = require("fs");
 const path = require("path");

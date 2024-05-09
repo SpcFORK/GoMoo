@@ -1,7 +1,7 @@
 // MUint8  Modded Uint8 Array
 // Copyright (C) 2024  SpectCOW
 
-const uint8E = require("./blocks/uint8E");
+const UInt8E = require("../blocks/uint8E");
 
 class MUint8 {
   /* 
@@ -30,7 +30,7 @@ class MUint8 {
 
   parseIntoOverflowArr(input = this.input) {
     // Shift the input up by the starting index
-    return [...uint8E.encodeUint8(input)].map((x) => x + this.startingIndex);
+    return [...UInt8E.encodeUint8(input)].map((x) => x + this.startingIndex);
   }
 
   unshiftFromOverflowArr(input = []) {
@@ -38,7 +38,7 @@ class MUint8 {
   }
 
   parseFromOverflowArr(input = []) {
-    return uint8E.decodeUint8(this.unshiftFromOverflowArr(input));
+    return UInt8E.decodeUint8(this.unshiftFromOverflowArr(input));
   }
 
   addEnum(symbol, value) {
@@ -171,8 +171,10 @@ class FlagArrayRLE {
 exports.FlagArrayRLE = FlagArrayRLE;
 exports.MUint8 = MUint8;
 exports.MUint8Encoder = MUint8Encoder;
+exports.UInt8E = UInt8E;
 exports.default = {
   MUint8,
   MUint8Encoder,
   FlagArrayRLE,
+  UInt8E
 }

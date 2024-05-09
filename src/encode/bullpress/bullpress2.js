@@ -14,18 +14,18 @@ const {
 
   calculateCost,
   calculateChunks,
-} = require("./blocks/cst");
+} = require("../blocks/cst");
 
-const casing = require("./blocks/casing");
+const casing = require("../blocks/casing");
 
-const AvoidEnc = require("./blocks/avoidE");
+const AvoidEnc = require("../blocks/avoidE");
 
-const BracketEncoder = require("./blocks/bracketE");
+const BracketEncoder = require("../blocks/bracketE");
 
 // const patternEncoder = require("./blocks/patternE");
-const Uint8Encoder = require("./blocks/uint8E")
+const Uint8Encoder = require("../blocks/uint8E")
 
-const base64 = require("./blocks/base64");
+const base64 = require("../blocks/base64");
 
 function encodeBullpress(input, chunkSize = CHUNK_LENGTH * 1) {
   // Chunk parsing for big data
