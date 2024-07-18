@@ -1,4 +1,5 @@
-const bp = require("../index");
+const { GoMooE1 } = require("../index");
+const bp = GoMooE1;
 
 function generateRandomString(length) {
   let s = "";
@@ -7,8 +8,7 @@ function generateRandomString(length) {
   return s;
 }
 
-// console.log("Random String: ", randomString);
-function testEncodingPerformance() {
+async function testEncodingPerformance() {
   const iterations = 15;
   let totalTime = 0;
 
@@ -27,7 +27,6 @@ function testEncodingPerformance() {
     const start = performance.now();
     const encoded = bp.encode(randomString);
     console.log("  Encode: ", encoded.encodedString.length, "bytes");
-    // const decoded = await bp.decodeP(encoded.encodedString);
     const end = performance.now();
 
     console.log("  PL: ", encoded.presumedTime, "ms");
@@ -40,10 +39,10 @@ function testEncodingPerformance() {
     );
   }
 
-  console.log(`Average encoding/decoding time: ${totalTime / iterations} ms`);
+  console.log(`Average encoding time: ${totalTime / iterations} ms`);
 }
 
-function testDecodingPerformance() {
+async function testDecodingPerformance() {
   const iterations = 15;
   let totalTime = 0;
 
@@ -59,10 +58,21 @@ function testDecodingPerformance() {
       "...\n"
     );
 
+    const encoded = bp.encode(randomString);
+
     const start = performance.now();
-    const decoded = bp.decodeP(randomString);
-    console.log("  Decode: ", decoded.length, "bytes");
+    const decoded = bp.decode(encoded.encodedString);
+    const end = performance.now();
+    console.log("  Decode: ", decoded.decodedString.length, "bytes");
+    console.log("  Chunks: ", decoded.chunkCount, "chunks");
+    totalTime += end - start;
+    console.log("  Time: ", (end - start).toFixed(2), "ms\n")
   }
+
+  console.log(`Average decoding time: ${totalTime / iterations} ms`);
 }
 
-testEncodingPerformance();
+(async () => {
+  await testEncodingPerformance();
+  await testDecodingPerformance();
+})();

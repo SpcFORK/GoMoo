@@ -1,0 +1,25 @@
+{
+  "name": "gomooe",
+  "version": "1.0.7",
+  "description": "An encoding library for my central account service (Scrd).",
+  "main": "index.js",
+  "scripts": {
+    "test": "node src/encode/bullpress/test/basic.js",
+    "bdts": "node src/encode/build.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SpcFORK/GoMoo.git#main"
+  },
+  "keywords": [
+    "gomoo1",
+    "gomoo",
+    "gm1"
+  ],
+  "author": "SpcFORK",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/SpcFORK/GoMoo/issues"
+  },
+  "homepage": "https://github.com/SpcFORK/GoMoo/tree/main/src/encode#readme"
+}

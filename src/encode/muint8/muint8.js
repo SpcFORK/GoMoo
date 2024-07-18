@@ -54,6 +54,20 @@ class MUint8 {
   }
 }
 
+class Chunking {
+  constructor(chunkSize = 1024) {
+    this.chunkSize = chunkSize;
+  }
+
+  chunkArray(array) {
+    let chunks = [];
+    for (let i = 0; i < array.length; i += this.chunkSize) {
+      chunks.push(array.slice(i, i + this.chunkSize));
+    }
+    return chunks;
+  }
+}
+
 class MUint8Encoder {
   constructor() {
     this.mu = new MUint8(null, {
@@ -63,7 +77,7 @@ class MUint8Encoder {
     });
 
     this.arrayRLE = new FlagArrayRLE();
-    this.arrayRLE.initializeCache();
+    this.chunking = new Chunking();
   }
 
   encode(input = "", chunkSize = 1024) {
@@ -78,13 +92,15 @@ class MUint8Encoder {
     else if (Array.isArray(input)) overflowArr = this.mu.shiftArr(input);
     else overflowArr = this.mu.parseIntoOverflowArr(input);
 
-    overflowArr.forEach((value, index) => {
-      let isOverFlow = value > 255,
-        chunkIndex = Math.floor(index / chunkSize),
-        adjustedValue = isOverFlow ? [255, 0, value - 255] : [value];
+    const chunks = this.chunking.chunkArray(overflowArr);
 
-      if (!output[chunkIndex]) output[chunkIndex] = [];
-      output[chunkIndex].push(...adjustedValue);
+    chunks.forEach((chunk, chunkIndex) => {
+      chunk.forEach((value, index) => {
+        let isOverFlow = value > 255,
+          adjustedValue = isOverFlow ? [255, 0, value - 255] : [value];
+        if (!output[chunkIndex]) output[chunkIndex] = [];
+        output[chunkIndex].push(...adjustedValue);
+      });
     });
 
     let encodedArray = output.flatMap((chunk) => this.arrayRLE.encode(chunk));
@@ -113,8 +129,6 @@ class MUint8Encoder {
   }
 }
 
-exports.MUint8Encoder = MUint8Encoder;
-
 class FlagArrayRLE {
   /* A RLE encoder for Uint8Array, which can be used to encode/decode flagArrays
     [5 6 3 2 2 2 3 2] -> [5 6 3 1 2 3 1 3 2]
@@ -122,13 +136,6 @@ class FlagArrayRLE {
     Flagged RLE sections are cased in 1's.
     -> [.. 1 value amm 1 ..]
   */
-  _cache = [];
-  _cacheIndex = 0;
-
-  initializeCache() {
-    this._cache = [];
-    this._cacheIndex = 0;
-  }
 
   encode(input = []) {
     let output = [],
@@ -177,6 +184,7 @@ const eobj = {
   MUint8,
   MUint8Encoder,
   UInt8E,
+  FlagArrayRLE,
 };
 
 if (typeof module !== "undefined") module.exports = eobj;

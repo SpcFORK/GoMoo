@@ -304,9 +304,7 @@ function makeBPClient(bpVer) {
   };
 }
 
-
 // ---
-
 
 const BPClient = makeBPClient(BP),
   BP2Client = makeBPClient(BP2);
