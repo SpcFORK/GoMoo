@@ -33,7 +33,9 @@ function encodeBullpress(input, chunkSize = CHUNK_LENGTH * 1) {
   for (let i = 0; i < input.length; i += chunkSize) {
     let chunk = input.substring(i, Math.min(i + chunkSize, input.length)),
       HuffmanMap = Huffman.compress(chunk),
-      basedKey = base64.encode(HuffmanMap.encoded),
+      binAsHexableChunks = HuffmanMap.encoded.match(/(.{1,4})/g),
+      hexContent = binAsHexableChunks.reduce((acc, hxc) => acc + parseInt(hxc.padStart(4, '0'), 2).toString(16), ''),
+      basedKey = base64.encode(hexContent),
       // Encode String
       res1 = BWT.burrowsWheelerTransform(basedKey),
       numbedKey = AvoidEnc.encode(res1.transformedString),
@@ -41,8 +43,9 @@ function encodeBullpress(input, chunkSize = CHUNK_LENGTH * 1) {
       transformedString = BracketEncoder.encode(cowrString)
 
     // Encode Map
-    let map = Huffman.codeMapToString(HuffmanMap.codeMap),
-      basedMap = base64.encode(map),
+    let map = Huffman.encodeCodeMap(HuffmanMap.codeMap),
+      mapString = map.join('\x04\x20'),
+      basedMap = base64.encode(mapString),
       map1 = BWT.burrowsWheelerTransform(basedMap),
       numbedMap = AvoidEnc.encode(map1.transformedString),
       cowrMap = Cowrle.encodeCOWRLE(numbedMap),
@@ -82,7 +85,9 @@ function decodeBullpress(input) {
       numbedMap = AvoidEnc.decode(cowrMap),
       map1 = BWT.inverseBurrowsWheelerTransform(numbedMap, mapI),
       unbasedMap = base64.decode(map1),
-      map = Huffman.unpackCodeMapString(unbasedMap)
+      encodedMap = unbasedMap.split('\x04\x20'),
+      uintMap = new Uint16Array(encodedMap.map(x => parseInt(x))),
+      map = Huffman.decodeCodeMap(uintMap)
 
     // Decode String
     const cowrString = BracketEncoder.decode(transformedString),
@@ -93,7 +98,9 @@ function decodeBullpress(input) {
         originalIndex,
       ),
       basedKey = base64.decode(burrowKey),
-      HuffmanMap = Huffman.decompress(basedKey, map);
+      unhexedContent = basedKey.match(/./g).map(x => parseInt(x, 16).toString(2).padStart(4, '0')),
+      hexContent = unhexedContent.join(''),
+      HuffmanMap = Huffman.decompress(hexContent, map);
 
     output += HuffmanMap
   }
@@ -137,6 +144,6 @@ const eobj = {
   Uint8Encoder
 };
 
-if (typeof globalThis.window !== "undefined")
-  globalThis.window.bullpress = eobj;
+if (typeof window !== "undefined")
+  window.bullpress = eobj;
 if (typeof module !== "undefined") module.exports = eobj;

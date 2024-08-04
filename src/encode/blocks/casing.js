@@ -19,5 +19,5 @@ const eobj = {
   },
 };
 
-if (typeof globalThis.window !== "undefined") globalThis.window.casing = eobj;
+if (typeof window !== "undefined") window.casing = eobj;
 if (typeof module !== "undefined") module.exports = eobj;

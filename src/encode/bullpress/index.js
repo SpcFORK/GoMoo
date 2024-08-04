@@ -309,9 +309,9 @@ function makeBPClient(bpVer) {
 const BPClient = makeBPClient(BP),
   BP2Client = makeBPClient(BP2);
 
-if (typeof globalThis.window !== "undefined") {
-  globalThis.window.GoMooE1 = BPClient;
-  globalThis.window.GoMooE2 = BP2Client;
+if (typeof window !== "undefined") {
+  window.GoMooE1 = BPClient;
+  window.GoMooE2 = BP2Client;
 }
 
 if (typeof module !== "undefined") {

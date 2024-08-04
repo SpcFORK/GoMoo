@@ -24,5 +24,5 @@ const eobj = {
   },
 };
 
-if (typeof globalThis.window !== "undefined") globalThis.window.AvoidEnc = eobj;
+if (typeof window !== "undefined") window.AvoidEnc = eobj;
 if (typeof module !== "undefined") module.exports = eobj;

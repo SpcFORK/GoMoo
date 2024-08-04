@@ -140,5 +140,5 @@ const eobj = {
   decodeCOWRLE,
 };
 
-if (typeof globalThis.window !== "undefined") globalThis.window.cowrle = eobj;
+if (typeof window !== "undefined") window.cowrle = eobj;
 if (typeof module !== "undefined") module.exports = eobj;

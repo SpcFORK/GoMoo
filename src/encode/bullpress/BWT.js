@@ -74,5 +74,5 @@ const eobj = {
   inverseBurrowsWheelerTransform,
 };
 
-if (typeof globalThis.window !== "undefined") globalThis.window.bwt = eobj;
+if (typeof window !== "undefined") window.bwt = eobj;
 if (typeof module !== "undefined") module.exports = eobj;

@@ -6,7 +6,10 @@ const encoder = new TextEncoder(),
   encodeUint8 = (input = "") => encoder.encode(input),
   decodeUint8 = (input = new Uint8Array()) => decoder.decode(input)
 
-module.exports = {
+const eobj = {
   encodeUint8,
-  decodeUint8
-};
+  decodeUint8,
+}
+
+if (typeof module !== "undefined") module.exports = eobj;
+if (typeof window !== "undefined") window.Uint8E = eobj;

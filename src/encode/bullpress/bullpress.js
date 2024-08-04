@@ -6,26 +6,29 @@
 const Cowrle = require("./cowrle");
 const BWT = require("./BWT");
 const Huffman = require("./huffman");
+const Lzw = require("./lzw");
 
 const {
   CHUNK_LENGTH,
   CHUCK_LENGTH_SPEED,
   CHAR_EXCHANGE_COST,
-  
+
   calculateCost,
   calculateChunks,
 } = require("../blocks/cst");
 
 const casing = require("../blocks/casing");
 
-const AvoidEnc = require("../blocks/avoidE")
+const AvoidEnc = require("../blocks/avoidE");
 
 const patternEncoder = require("../blocks/patternE");
 const BracketEncoder = require("../blocks/bracketE");
 
-const Uint8Encoder = require("../blocks/uint8E")
+const Uint8Encoder = require("../blocks/uint8E");
 
 const base64 = require("../blocks/base64");
+const hex = require("../blocks/hexE");
+const utf8 = require("../blocks/utf8");
 
 function encodeBullpress(input, chunkSize = CHUNK_LENGTH) {
   // Chunk parsing for big data
@@ -36,23 +39,35 @@ function encodeBullpress(input, chunkSize = CHUNK_LENGTH) {
       res1 = BWT.burrowsWheelerTransform(basedKey),
       numbedKey = AvoidEnc.encode(res1.transformedString),
       cowrString = Cowrle.encodeCOWRLE(numbedKey),
-      transformedString = BracketEncoder.encode(cowrString);
+      patterKey = patternEncoder.encode(cowrString),
+      transformedString = BracketEncoder.encode(patterKey);
 
-    encodedResult += casing.caseChunk({
-      transformedString,
-      originalIndex: res1.originalIndex,
-    });
+    // UTF8 => LZW
+    encodedResult += Lzw.lzwCompress(
+      utf8
+        .encodeUTF8(
+          casing.caseChunk({
+            transformedString,
+            originalIndex: res1.originalIndex,
+          }),
+        )
+        .reduce((str, v) => str + String.fromCharCode(v), ""),
+    );
   }
 
-  return casing.caseBull({
-    chunk: encodedResult,
-  });
+  return casing.caseBull({ chunk: encodedResult });
 }
 
 function decodeBullpress(input) {
   let output = "",
     deCasedBull = /<Bull:(.*):>/g.exec(input)[1],
-    decodedResult = deCasedBull.match(/<Bull_Chunk:(.*?)\|(\d+):>/g);
+    // LZW => UTF8
+    decoded = utf8.decodeUTF8(
+      Lzw.lzwDecompress(deCasedBull)
+        .split("")
+        .map((v) => v.charCodeAt(0)),
+    ),
+    decodedResult = decoded.match(/<Bull_Chunk:(.*?)\|(\d+):>/g);
 
   if (!decodedResult) return;
 
@@ -61,7 +76,8 @@ function decodeBullpress(input) {
       [, transformedString, originalIndex] = chunk.match(
         /<Bull_Chunk:(.*)\|(\d+):>/,
       ),
-      cowrString = BracketEncoder.decode(transformedString),
+      patternKey = BracketEncoder.decode(transformedString),
+      cowrString = patternEncoder.decode(patternKey),
       numbedKey = Cowrle.decodeCOWRLE(cowrString),
       res1 = AvoidEnc.decode(numbedKey),
       basedKey = BWT.inverseBurrowsWheelerTransform(res1, originalIndex);
@@ -87,7 +103,7 @@ function decompressFromUInt8Buffer(input = new Uint8Array()) {
 const eobj = {
   encodeBullpress,
   decodeBullpress,
-  
+
   calculateCost,
   calculateChunks,
 
@@ -106,8 +122,8 @@ const eobj = {
 
   compressToUInt8Buffer,
   decompressFromUInt8Buffer,
-  Uint8Encoder
+  Uint8Encoder,
 };
 
-if (typeof globalThis.window !== "undefined") globalThis.window.bullpress = eobj;
+if (typeof window !== "undefined") window.bullpress = eobj;
 if (typeof module !== "undefined") module.exports = eobj;

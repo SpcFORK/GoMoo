@@ -53,16 +53,16 @@ const base64 = {
   },
 };
 
-if (typeof globalThis.window !== "undefined") globalThis.window.base64 = base64;
+if (typeof window !== "undefined") window.base64 = base64;
 
-if (typeof globalThis.Buffer !== "undefined")
+if (typeof Buffer !== "undefined")
   module.exports = {
     encode(input) {
-      return globalThis.Buffer.from(input).toString("base64");
+      return Buffer.from(input).toString("base64");
     },
 
     decode(input) {
-      return globalThis.Buffer.from(input, "base64").toString("ascii");
+      return Buffer.from(input, "base64").toString("ascii");
     },
   };
 else if (typeof module !== "undefined") module.exports = base64;

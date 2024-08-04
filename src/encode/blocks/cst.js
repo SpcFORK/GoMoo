@@ -19,5 +19,5 @@ const eobj = {
   calculateChunks,
 };
 
-if (typeof globalThis.window !== "undefined") globalThis.window.cst = eobj;
+if (typeof window !== "undefined") window.cst = eobj;
 if (typeof module !== "undefined") module.exports = eobj;
