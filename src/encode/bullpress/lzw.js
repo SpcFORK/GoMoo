@@ -34,6 +34,12 @@ const { lzwCompress } = class LZWC {
     );
   }
 
+  constructor(input) {
+    this.inputArray = input.split("");
+    this.currentChar = this.inputArray[0];
+    this.mutate();
+  }
+
   mutate() {
     for (let i = 1, nextChar, ind; i < this.inputArray.length; i++) {
       [nextChar, ind] = this.getIndSet(i);
@@ -46,14 +52,7 @@ const { lzwCompress } = class LZWC {
     }
     this.pushOut();
 
-    for (let i = 0; i < this.output.length; i++)
-      this.output[i] = String.fromCharCode(this.output[i]);
-  }
-
-  constructor(input) {
-    this.inputArray = input.split("");
-    this.currentChar = this.inputArray[0];
-    this.mutate();
+    this.output = this.output.map((char) => String.fromCharCode(char));
   }
 };
 
@@ -64,7 +63,7 @@ const { lzwDecompress } = class LZCD {
 
   dictionary = {};
   dictSize = 256;
-  code = 256;
+  code = this.dictSize;
 
   compressedArray = [];
   _char = "";

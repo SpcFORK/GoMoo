@@ -29,60 +29,62 @@ const Uint8Encoder = require("../blocks/uint8E");
 const base64 = require("../blocks/base64");
 const hex = require("../blocks/hexE");
 const utf8 = require("../blocks/utf8");
+const base92 = require("../blocks/base92");
 
 function encodeBullpress(input, chunkSize = CHUNK_LENGTH) {
   // Chunk parsing for big data
   let encodedResult = "";
   for (let i = 0; i < input.length; i += chunkSize) {
     let chunk = input.substring(i, Math.min(i + chunkSize, input.length)),
-      basedKey = base64.encode(chunk),
-      res1 = BWT.burrowsWheelerTransform(basedKey),
+      hexedKey = hex.stringToHex(chunk),
+      res1 = BWT.burrowsWheelerTransform(hexedKey),
       numbedKey = AvoidEnc.encode(res1.transformedString),
       cowrString = Cowrle.encodeCOWRLE(numbedKey),
       patterKey = patternEncoder.encode(cowrString),
       transformedString = BracketEncoder.encode(patterKey);
 
     // UTF8 => LZW
-    encodedResult += Lzw.lzwCompress(
-      utf8
-        .encodeUTF8(
-          casing.caseChunk({
-            transformedString,
-            originalIndex: res1.originalIndex,
-          }),
-        )
-        .reduce((str, v) => str + String.fromCharCode(v), ""),
-    );
+    encodedResult += casing.caseChunk({
+      transformedString: Lzw.lzwCompress(
+        utf8
+          .encodeUTF8(transformedString)
+          .reduce((str, v) => str + String.fromCharCode(v), ""),
+      ),
+      originalIndex: res1.originalIndex,
+    });
   }
 
   return casing.caseBull({ chunk: encodedResult });
 }
 
 function decodeBullpress(input) {
-  let output = "",
-    deCasedBull = /<Bull:(.*):>/g.exec(input)[1],
-    // LZW => UTF8
-    decoded = utf8.decodeUTF8(
-      Lzw.lzwDecompress(deCasedBull)
-        .split("")
-        .map((v) => v.charCodeAt(0)),
-    ),
-    decodedResult = decoded.match(/<Bull_Chunk:(.*?)\|(\d+):>/g);
+  let output = "";
+  try {
+    var deCasedBull = /<Bull:([^]*):>/g.exec(input)[1],
+      decodedResult = [
+        ...deCasedBull.matchAll(/<Bull_Chunk:([^]*?)\|(\d+):>/g),
+      ].map((rarr) => [rarr[0], rarr[1], rarr[2]]);
+  } catch (e) {
+    throw new Error("Invalid Bullpress data: \n" + e);
+  }
 
   if (!decodedResult) return;
 
   for (let i = 0; i < decodedResult.length; i++) {
     const chunk = decodedResult[i],
-      [, transformedString, originalIndex] = chunk.match(
-        /<Bull_Chunk:(.*)\|(\d+):>/,
+      [, transformedString, originalIndex] = chunk,
+      decodedString = utf8.decodeUTF8(
+        Lzw.lzwDecompress(transformedString)
+          .split("")
+          .map((v) => v.charCodeAt(0)),
       ),
-      patternKey = BracketEncoder.decode(transformedString),
+      patternKey = BracketEncoder.decode(decodedString),
       cowrString = patternEncoder.decode(patternKey),
       numbedKey = Cowrle.decodeCOWRLE(cowrString),
       res1 = AvoidEnc.decode(numbedKey),
-      basedKey = BWT.inverseBurrowsWheelerTransform(res1, originalIndex);
+      hexedKey = BWT.inverseBurrowsWheelerTransform(res1, originalIndex);
 
-    output += base64.decode(basedKey);
+    output += hex.hexToString(hexedKey);
   }
 
   return output;

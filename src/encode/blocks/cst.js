@@ -1,5 +1,10 @@
 const CHUNK_LENGTH = 1024 * 8;
-const CHUCK_LENGTH_SPEED = 270;
+
+// Manually must adjust when changes to API are made
+// Who knows how many MS
+// Run speed.js to find out
+const CHUCK_LENGTH_SPEED = 4500
+
 const CHAR_EXCHANGE_COST = CHUCK_LENGTH_SPEED / CHUNK_LENGTH;
 
 function calculateCost(string) {

@@ -3,7 +3,7 @@ const BP = require("./bullpress.js"),
 
 // ---
 
-function makeBPClient(bpVer) {
+function makeBPClient(bpVer = BP) {
   const {
     encodeBullpress,
     decodeBullpress,
@@ -90,7 +90,15 @@ function makeBPClient(bpVer) {
   }
 
   function encodeP(input, logging = false) {
-    return new Promise((resolve, reject) => resolve(encode(input, logging)));
+    return new Promise((resolve, reject) =>
+      setTimeout(() => {
+        try {
+          resolve(encode(input, logging));
+        } catch (error) {
+          reject(error);
+        }
+      }),
+    );
   }
 
   // ---
@@ -141,7 +149,15 @@ function makeBPClient(bpVer) {
   }
 
   function decodeP(input, logging = false) {
-    return new Promise((resolve, reject) => resolve(decode(input, logging)));
+    return new Promise((resolve, reject) =>
+      setTimeout(() => {
+        try {
+          resolve(decode(input, logging));
+        } catch (error) {
+          reject(error);
+        }
+      }),
+    );
   }
 
   // ---
